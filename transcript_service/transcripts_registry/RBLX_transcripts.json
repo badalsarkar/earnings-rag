@@ -1,0 +1,80 @@
+{
+  "ticker": "RBLX",
+  "company_slug": "roblox",
+  "earliest_year": 2024,
+  "entries": [
+    {
+      "quarter": 4,
+      "year": 2023,
+      "report_date": "2024/02/07",
+      "status": "fetched",
+      "url": "https://www.fool.com/earnings/call-transcripts/2024/02/07/roblox-rblx-q4-2023-earnings-call-transcript/"
+    },
+    {
+      "quarter": 1,
+      "year": 2024,
+      "report_date": "2024/05/09",
+      "status": "fetched",
+      "url": "https://www.fool.com/earnings/call-transcripts/2024/05/09/roblox-rblx-q1-2024-earnings-call-transcript/"
+    },
+    {
+      "quarter": 2,
+      "year": 2024,
+      "report_date": "2024/08/01",
+      "status": "fetched",
+      "url": "https://www.fool.com/earnings/call-transcripts/2024/08/01/roblox-rblx-q2-2024-earnings-call-transcript/"
+    },
+    {
+      "quarter": 3,
+      "year": 2024,
+      "report_date": "2024/10/31",
+      "status": "fetched",
+      "url": "https://www.fool.com/earnings/call-transcripts/2024/10/31/roblox-rblx-q3-2024-earnings-call-transcript/"
+    },
+    {
+      "quarter": 4,
+      "year": 2024,
+      "report_date": "2025/02/06",
+      "status": "fetched",
+      "url": "https://www.fool.com/earnings/call-transcripts/2025/02/06/roblox-rblx-q4-2024-earnings-call-transcript/"
+    },
+    {
+      "quarter": 1,
+      "year": 2025,
+      "report_date": "2025/05/01",
+      "status": "error",
+      "url": "https://www.fool.com/earnings/call-transcripts/2025/05/01/roblox-rblx-q1-2025-earnings-call-transcript/",
+      "error": "404 Client Error: Not Found for url: https://www.fool.com/earnings/call-transcripts/2025/05/01/roblox-rblx-q1-2025-earnings-call-transcript/"
+    },
+    {
+      "quarter": 2,
+      "year": 2025,
+      "report_date": "2025/07/31",
+      "status": "error",
+      "url": "https://www.fool.com/earnings/call-transcripts/2025/07/31/roblox-rblx-q2-2025-earnings-call-transcript/",
+      "error": "404 Client Error: Not Found for url: https://www.fool.com/earnings/call-transcripts/2025/07/31/roblox-rblx-q2-2025-earnings-call-transcript/"
+    },
+    {
+      "quarter": 3,
+      "year": 2025,
+      "report_date": "2025/10/30",
+      "status": "error",
+      "url": "https://www.fool.com/earnings/call-transcripts/2025/10/30/roblox-rblx-q3-2025-earnings-call-transcript/",
+      "error": "404 Client Error: Not Found for url: https://www.fool.com/earnings/call-transcripts/2025/10/30/roblox-rblx-q3-2025-earnings-call-transcript/"
+    },
+    {
+      "quarter": 4,
+      "year": 2025,
+      "report_date": "2026/02/05",
+      "status": "fetched",
+      "url": "https://www.fool.com/earnings/call-transcripts/2026/02/05/roblox-rblx-q4-2025-earnings-call-transcript/"
+    },
+    {
+      "quarter": 1,
+      "year": 2026,
+      "report_date": "2026/04/30",
+      "status": "fetched",
+      "url": "https://www.fool.com/earnings/call-transcripts/2026/04/30/roblox-rblx-q1-2026-earnings-call-transcript/"
+    }
+  ]
+}

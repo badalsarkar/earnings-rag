@@ -1,0 +1,17 @@
+[project]
+name = "earnings-rag"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "cohere>=7.0.0",
+    "lxml>=6.1.1",
+    "requests>=2.32.0",
+    "yfinance>=1.4.0",
+]
+
+[dependency-groups]
+dev = [
+    "beautifulsoup4>=4.14.3",
+]
