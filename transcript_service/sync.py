@@ -2,7 +2,7 @@
 import sys
 from datetime import date
 
-from .fiscal import find_fiscal_quarter, fiscal_year_end_month, get_earnings_call_date
+from .fiscal import find_fiscal_quarter
 from .fool import _SUFFIXES, build_transcript_url, scrape_transcript
 from .paths import TRANSCRIPTS_DIR
 from .registry import normalize_report_date, transcript_path
@@ -22,10 +22,10 @@ def queue_new_dates(
     ticker = registry["ticker"]
     company_slug = registry.get("company_slug", "")
     earliest_year = registry["earliest_year"]
+    fy_end_month: int = registry.get("fy_end_month", 12)
     entries = registry["entries"]
     today = date.today()
     existing_dates = {normalize_report_date(e.get("report_date")) for e in entries}
-    fy_end_month: int | None = None
     added = 0
 
     for d_str in dates:
@@ -37,10 +37,6 @@ def queue_new_dates(
         report_date = d.strftime("%Y/%m/%d")
         if report_date in existing_dates:
             continue
-
-        if fy_end_month is None:
-            print(f"  Querying fiscal calendar for {ticker} ...")
-            fy_end_month = fiscal_year_end_month(ticker)
 
         try:
             quarter, year = find_fiscal_quarter(d, fy_end_month)
@@ -104,15 +100,16 @@ def fetch_entry(entry: dict, ticker: str, company_slug: str) -> bool:
     year = entry["year"]
     print(f"Fetching {ticker} Q{quarter} FY{year} ...")
     try:
-        report_date = entry.get("report_date") or get_earnings_call_date(ticker, quarter, year)
+        report_date = entry.get("report_date")
+        if not report_date:
+            raise ValueError(f"No report_date for {ticker} Q{quarter} FY{year}")
         report_date_slash = report_date.replace("-", "/")
         stored_url = entry.get("url")
-        urls_to_try = (
-            [stored_url]
-            if stored_url
-            else [build_transcript_url(company_slug, ticker, quarter, year, report_date_slash, s)
-                  for s in _SUFFIXES]
-        )
+        fresh_urls = [
+            build_transcript_url(company_slug, ticker, quarter, year, report_date_slash, s)
+            for s in _SUFFIXES
+        ]
+        urls_to_try = ([stored_url] + fresh_urls) if stored_url else fresh_urls
         transcript = url = None
         last_exc: Exception | None = None
         for candidate in urls_to_try:

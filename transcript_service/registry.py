@@ -19,11 +19,14 @@ def normalize_report_date(value: str | None) -> str | None:
     return value.replace("-", "/") if value else None
 
 
-def new_registry(ticker: str, company_slug: str, earliest_year: int) -> dict:
+def new_registry(
+    ticker: str, company_slug: str, earliest_year: int, fy_end_month: int = 12
+) -> dict:
     return {
         "ticker": ticker,
         "company_slug": company_slug,
         "earliest_year": earliest_year,
+        "fy_end_month": fy_end_month,
         "entries": [],
     }
 

@@ -44,7 +44,7 @@
       "report_date": "2025/05/01",
       "status": "error",
       "url": "https://www.fool.com/earnings/call-transcripts/2025/05/01/roblox-rblx-q1-2025-earnings-call-transcript/",
-      "error": "404 Client Error: Not Found for url: https://www.fool.com/earnings/call-transcripts/2025/05/01/roblox-rblx-q1-2025-earnings-call-transcript/"
+      "error": "429 Client Error: Too Many Requests for url: https://www.fool.com/earnings/call-transcripts/2025/05/01/roblox-rblx-q1-2025-earnings-transcript/"
     },
     {
       "quarter": 2,
@@ -52,7 +52,7 @@
       "report_date": "2025/07/31",
       "status": "error",
       "url": "https://www.fool.com/earnings/call-transcripts/2025/07/31/roblox-rblx-q2-2025-earnings-call-transcript/",
-      "error": "404 Client Error: Not Found for url: https://www.fool.com/earnings/call-transcripts/2025/07/31/roblox-rblx-q2-2025-earnings-call-transcript/"
+      "error": "429 Client Error: Too Many Requests for url: https://www.fool.com/earnings/call-transcripts/2025/07/31/roblox-rblx-q2-2025-earnings-transcript/"
     },
     {
       "quarter": 3,
@@ -60,7 +60,7 @@
       "report_date": "2025/10/30",
       "status": "error",
       "url": "https://www.fool.com/earnings/call-transcripts/2025/10/30/roblox-rblx-q3-2025-earnings-call-transcript/",
-      "error": "404 Client Error: Not Found for url: https://www.fool.com/earnings/call-transcripts/2025/10/30/roblox-rblx-q3-2025-earnings-call-transcript/"
+      "error": "429 Client Error: Too Many Requests for url: https://www.fool.com/earnings/call-transcripts/2025/10/30/roblox-rblx-q3-2025-earnings-transcript/"
     },
     {
       "quarter": 4,
@@ -76,5 +76,6 @@
       "status": "fetched",
       "url": "https://www.fool.com/earnings/call-transcripts/2026/04/30/roblox-rblx-q1-2026-earnings-call-transcript/"
     }
-  ]
+  ],
+  "fy_end_month": 12
 }

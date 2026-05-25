@@ -4,6 +4,7 @@ import sys
 from datetime import date
 
 from .dates import refresh_earnings_dates
+from .fiscal import find_fiscal_quarter
 from .paths import TRANSCRIPTS_DIR
 from .registry import (
     all_registered_tickers,
@@ -16,11 +17,39 @@ from .registry import (
 from .sync import fetch_pending, queue_new_dates, resolve_pending_urls
 
 
+def _recalculate_quarters(registry: dict, fy_end_month: int) -> None:
+    """Recompute quarter/year for all entries from their stored report_date.
+
+    For non-fetched entries, clears the stored URL if it no longer matches
+    the current quarter/year (catches stale URLs from a previous wrong calculation).
+    """
+    for entry in registry["entries"]:
+        report_date_str = entry.get("report_date")
+        if not report_date_str:
+            continue
+        try:
+            d = date.fromisoformat(report_date_str.replace("/", "-"))
+            new_q, new_y = find_fiscal_quarter(d, fy_end_month)
+            entry["quarter"] = new_q
+            entry["year"] = new_y
+            if entry.get("status") != "fetched":
+                url = entry.get("url") or ""
+                company_slug = registry.get("company_slug", "")
+                if f"q{new_q}-{new_y}" not in url or (company_slug and company_slug not in url):
+                    entry["url"] = None
+                    entry.pop("error", None)
+                    if entry.get("status") == "error":
+                        entry["status"] = "pending"
+        except ValueError:
+            pass
+
+
 def cmd_init(args) -> None:
     """Bootstrap (or update) a ticker's registry."""
     ticker = args.ticker.upper()
     company_slug = args.company_slug.lower()
     earliest_year = args.from_year
+    fy_end_month = args.fy_end_month
     from_date = date.fromisoformat(args.from_date) if args.from_date else None
 
     TRANSCRIPTS_DIR.mkdir(parents=True, exist_ok=True)
@@ -28,16 +57,18 @@ def cmd_init(args) -> None:
 
     registry = load_ticker_registry(ticker)
     if registry is None:
-        registry = new_registry(ticker, company_slug, earliest_year)
+        registry = new_registry(ticker, company_slug, earliest_year, fy_end_month)
     else:
         registry["company_slug"] = company_slug
         registry["earliest_year"] = earliest_year
+        registry["fy_end_month"] = fy_end_month
+        _recalculate_quarters(registry, fy_end_month)
 
     added = queue_new_dates(registry, dates, from_date)
     resolved = resolve_pending_urls(registry)
     save_ticker_registry(ticker, registry)
     print(
-        f"\nearliest_year={earliest_year}, "
+        f"\nearliest_year={earliest_year}, fy_end_month={fy_end_month}, "
         f"{added} new entr{'y' if added == 1 else 'ies'} added, "
         f"{resolved} URL{'s' if resolved != 1 else ''} resolved -> {registry_path(ticker)}"
     )
@@ -168,6 +199,8 @@ def main() -> None:
     init_p.add_argument("company_slug", help="Motley Fool URL slug, e.g. uipath")
     init_p.add_argument("--from-year", dest="from_year", type=int, required=True, metavar="YYYY",
                         help="Earliest calendar year of report dates to include (stored as the registry floor)")
+    init_p.add_argument("--fy-end-month", dest="fy_end_month", type=int, default=12, metavar="M",
+                        help="Fiscal year end month 1-12 (default: 12 for December)")
     init_p.add_argument("--from", dest="from_date", metavar="YYYY-MM-DD",
                         help="Optional finer date filter for the initial queue")
 

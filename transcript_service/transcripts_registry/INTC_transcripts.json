@@ -44,7 +44,7 @@
       "report_date": "2025/04/24",
       "status": "error",
       "url": "https://www.fool.com/earnings/call-transcripts/2025/04/24/intel-intc-q1-2025-earnings-call-transcript/",
-      "error": "404 Client Error: Not Found for url: https://www.fool.com/earnings/call-transcripts/2025/04/24/intel-intc-q1-2025-earnings-call-transcript/"
+      "error": "404 Client Error: Not Found for url: https://www.fool.com/earnings/call-transcripts/2025/04/24/intel-intc-q1-2025-earnings-transcript/"
     },
     {
       "quarter": 2,
@@ -52,7 +52,7 @@
       "report_date": "2025/07/24",
       "status": "error",
       "url": "https://www.fool.com/earnings/call-transcripts/2025/07/24/intel-intc-q2-2025-earnings-call-transcript/",
-      "error": "404 Client Error: Not Found for url: https://www.fool.com/earnings/call-transcripts/2025/07/24/intel-intc-q2-2025-earnings-call-transcript/"
+      "error": "404 Client Error: Not Found for url: https://www.fool.com/earnings/call-transcripts/2025/07/24/intel-intc-q2-2025-earnings-transcript/"
     },
     {
       "quarter": 3,
@@ -60,7 +60,7 @@
       "report_date": "2025/10/23",
       "status": "error",
       "url": "https://www.fool.com/earnings/call-transcripts/2025/10/23/intel-intc-q3-2025-earnings-call-transcript/",
-      "error": "404 Client Error: Not Found for url: https://www.fool.com/earnings/call-transcripts/2025/10/23/intel-intc-q3-2025-earnings-call-transcript/"
+      "error": "404 Client Error: Not Found for url: https://www.fool.com/earnings/call-transcripts/2025/10/23/intel-intc-q3-2025-earnings-transcript/"
     },
     {
       "quarter": 4,
@@ -68,15 +68,15 @@
       "report_date": "2026/01/22",
       "status": "error",
       "url": "https://www.fool.com/earnings/call-transcripts/2026/01/22/intel-intc-q4-2025-earnings-call-transcript/",
-      "error": "404 Client Error: Not Found for url: https://www.fool.com/earnings/call-transcripts/2026/01/22/intel-intc-q4-2025-earnings-call-transcript/"
+      "error": "404 Client Error: Not Found for url: https://www.fool.com/earnings/call-transcripts/2026/01/22/intel-intc-q4-2025-earnings-transcript/"
     },
     {
       "quarter": 1,
       "year": 2026,
       "report_date": "2026/04/23",
-      "status": "error",
-      "url": "https://www.fool.com/earnings/call-transcripts/2026/04/23/intel-intc-q1-2026-earnings-call-transcript/",
-      "error": "404 Client Error: Not Found for url: https://www.fool.com/earnings/call-transcripts/2026/04/23/intel-intc-q1-2026-earnings-call-transcript/"
+      "status": "fetched",
+      "url": "https://www.fool.com/earnings/call-transcripts/2026/04/23/intel-intc-q1-2026-earnings-transcript/"
     }
-  ]
+  ],
+  "fy_end_month": 12
 }
