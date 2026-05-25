@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:17
+    image: pgvector/pgvector:pg17
     container_name: earnings_postgres
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
@@ -8,6 +8,8 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-earnings}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
     networks:
       - earnings_net
     restart: unless-stopped
