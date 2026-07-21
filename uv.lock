@@ -277,6 +277,7 @@ dependencies = [
     { name = "psycopg", extra = ["binary"] },
     { name = "pydantic" },
     { name = "requests" },
+    { name = "tokenizers" },
     { name = "uvicorn", extra = ["standard"] },
     { name = "yfinance" },
 ]
@@ -284,6 +285,7 @@ dependencies = [
 [package.dev-dependencies]
 dev = [
     { name = "beautifulsoup4" },
+    { name = "python-dotenv" },
 ]
 
 [package.metadata]
@@ -294,12 +296,16 @@ requires-dist = [
     { name = "psycopg", extras = ["binary"], specifier = ">=3.3.4" },
     { name = "pydantic", specifier = ">=2.13.4" },
     { name = "requests", specifier = ">=2.32.0" },
+    { name = "tokenizers", specifier = ">=0.23.1" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.48.0" },
     { name = "yfinance", specifier = ">=1.4.0" },
 ]
 
 [package.metadata.requires-dev]
-dev = [{ name = "beautifulsoup4", specifier = ">=4.14.3" }]
+dev = [
+    { name = "beautifulsoup4", specifier = ">=4.14.3" },
+    { name = "python-dotenv", specifier = ">=1.2.2" },
+]
 
 [[package]]
 name = "fastapi"

@@ -1,9 +1,16 @@
+import logging
+import os
 from datetime import date
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 import db_service
+
+logging.basicConfig(
+    level=os.getenv("LOG_LEVEL", "INFO").upper(),
+    format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+)
 
 app = FastAPI(title="Earnings RAG API")
 
