@@ -1,11 +1,12 @@
 """Earnings transcript downloader.
 
-Registry schema (``transcripts_registry/<TICKER>_transcripts.json``):
+Registry schema (``data/registry/<TICKER>_transcripts.json``):
 
     {
       "ticker": "PATH",
       "company_slug": "uipath",
       "earliest_year": 2024,
+      "fy_end_month": 12,
       "entries": [
         {"quarter": 1, "year": 2025, "report_date": "2024/05/29", "status": "fetched"},
         ...
@@ -15,12 +16,12 @@ Registry schema (``transcripts_registry/<TICKER>_transcripts.json``):
 Legacy list-of-entries files are auto-migrated on first load.
 
 Usage (CLI):
-    python -m transcript_service                                  # sync all tickers
-    python -m transcript_service sync [ticker] [--retry]
-    python -m transcript_service init <ticker> <slug> --from-year YYYY
-    python -m transcript_service add  <ticker> <quarter> <year>
-    python -m transcript_service fetch
-    python -m transcript_service list
+    earnings-transcripts                                  # sync all tickers
+    earnings-transcripts sync [ticker] [--retry]
+    earnings-transcripts init <ticker> <slug> --from-year YYYY
+    earnings-transcripts add  <ticker> <quarter> <year>
+    earnings-transcripts fetch
+    earnings-transcripts list
 """
 from .registry import (
     all_registered_tickers,

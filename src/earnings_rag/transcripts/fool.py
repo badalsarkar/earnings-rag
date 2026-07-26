@@ -13,12 +13,12 @@ _HEADERS = {
 }
 
 
-_SUFFIXES = ("earnings-call-transcript", "earnings-transcript")
+SUFFIXES = ("earnings-call-transcript", "earnings-transcript")
 
 
 def build_transcript_url(
     company_slug: str, ticker: str, quarter: int, year: int, report_date: str,
-    suffix: str = _SUFFIXES[0],
+    suffix: str = SUFFIXES[0],
 ) -> str:
     """Construct the Motley Fool transcript URL without any network check."""
     ticker_lower = ticker.lower()

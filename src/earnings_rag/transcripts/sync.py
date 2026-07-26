@@ -2,9 +2,9 @@
 import sys
 from datetime import date
 
+from ..config import TRANSCRIPTS_DIR
 from .fiscal import find_fiscal_quarter
-from .fool import _SUFFIXES, build_transcript_url, scrape_transcript
-from .paths import TRANSCRIPTS_DIR
+from .fool import SUFFIXES, build_transcript_url, scrape_transcript
 from .registry import normalize_report_date, transcript_path
 
 
@@ -107,7 +107,7 @@ def fetch_entry(entry: dict, ticker: str, company_slug: str) -> bool:
         stored_url = entry.get("url")
         fresh_urls = [
             build_transcript_url(company_slug, ticker, quarter, year, report_date_slash, s)
-            for s in _SUFFIXES
+            for s in SUFFIXES
         ]
         urls_to_try = ([stored_url] + fresh_urls) if stored_url else fresh_urls
         transcript = url = None

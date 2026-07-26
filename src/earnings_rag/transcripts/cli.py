@@ -1,11 +1,11 @@
-"""CLI commands and argument parser for transcript_service."""
+"""CLI commands and argument parser for the earnings-transcripts scraper."""
 import argparse
 import sys
 from datetime import date
 
+from ..config import TRANSCRIPTS_DIR
 from .dates import refresh_earnings_dates
 from .fiscal import find_fiscal_quarter
-from .paths import TRANSCRIPTS_DIR
 from .registry import (
     all_registered_tickers,
     load_ticker_registry,
@@ -88,7 +88,10 @@ def cmd_sync(args) -> None:
             print(f"{ticker}: no registry (run 'init {ticker} <slug> --from-year YYYY' first).")
             continue
 
-        print(f"\n=== {ticker} ({registry['company_slug']}) earliest_year={registry['earliest_year']} ===")
+        print(
+            f"\n=== {ticker} ({registry['company_slug']}) "
+            f"earliest_year={registry['earliest_year']} ==="
+        )
 
         dates = refresh_earnings_dates(ticker)
         if queue_new_dates(registry, dates) == 0:
@@ -184,7 +187,7 @@ def cmd_list(_args) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        prog="python -m transcript_service",
+        prog="earnings-transcripts",
         description="Earnings transcript downloader",
     )
     sub = parser.add_subparsers(dest="command")
@@ -198,7 +201,8 @@ def main() -> None:
     init_p.add_argument("ticker", help="Stock ticker, e.g. PATH")
     init_p.add_argument("company_slug", help="Motley Fool URL slug, e.g. uipath")
     init_p.add_argument("--from-year", dest="from_year", type=int, required=True, metavar="YYYY",
-                        help="Earliest calendar year of report dates to include (stored as the registry floor)")
+                        help="Earliest calendar year of report dates to include "
+                             "(stored as the registry floor)")
     init_p.add_argument("--fy-end-month", dest="fy_end_month", type=int, default=12, metavar="M",
                         help="Fiscal year end month 1-12 (default: 12 for December)")
     init_p.add_argument("--from", dest="from_date", metavar="YYYY-MM-DD",

@@ -1,38 +1,12 @@
+"""Queries against the transcripts and transcript_chunks tables."""
 import logging
-import os
-from contextlib import contextmanager
 from datetime import date
 
 import psycopg
-from psycopg.rows import dict_row
+
+from .connection import connection
 
 logger = logging.getLogger(__name__)
-
-
-def _dsn() -> str:
-    return (
-        f"host={os.getenv('POSTGRES_HOST', 'localhost')} "
-        f"port={os.getenv('POSTGRES_PORT', '5432')} "
-        f"dbname={os.getenv('POSTGRES_DB', 'earnings')} "
-        f"user={os.getenv('POSTGRES_USER', 'postgres')} "
-        f"password={os.getenv('POSTGRES_PASSWORD', 'postgres')}"
-    )
-
-
-@contextmanager
-def _conn():
-    host = os.getenv("POSTGRES_HOST", "localhost")
-    port = os.getenv("POSTGRES_PORT", "5432")
-    dbname = os.getenv("POSTGRES_DB", "earnings")
-    logger.debug("Opening DB connection to %s:%s/%s", host, port, dbname)
-    try:
-        logger.info(f"Connecting to {host}:{port}/{dbname}")
-        with psycopg.connect(_dsn(), row_factory=dict_row) as conn:
-            yield conn
-    except psycopg.Error as e:
-        logger.exception("DB connection to %s:%s/%s failed", host, port, dbname)
-        logger.exception(e)
-        raise
 
 
 def upsert_transcript(
@@ -54,12 +28,14 @@ def upsert_transcript(
     """
     logger.info("Upserting transcript %s Q%d FY%d", ticker, quarter, fiscal_year)
     try:
-        with _conn() as conn:
+        with connection() as conn:
             row = conn.execute(sql, (ticker, quarter, fiscal_year, report_date, content)).fetchone()
     except psycopg.Error:
         logger.exception("Failed to upsert transcript %s Q%d FY%d", ticker, quarter, fiscal_year)
         raise
-    logger.info("Upserted transcript %s Q%d FY%d (id=%s)", ticker, quarter, fiscal_year, row.get("id"))
+    logger.info(
+        "Upserted transcript %s Q%d FY%d (id=%s)", ticker, quarter, fiscal_year, row.get("id")
+    )
     return row
 
 
@@ -70,7 +46,7 @@ def get_transcript(ticker: str, quarter: int, fiscal_year: int) -> dict | None:
     """
     logger.debug("Fetching transcript %s Q%d FY%d", ticker, quarter, fiscal_year)
     try:
-        with _conn() as conn:
+        with connection() as conn:
             row = conn.execute(sql, (ticker, quarter, fiscal_year)).fetchone()
     except psycopg.Error:
         logger.exception("Failed to fetch transcript %s Q%d FY%d", ticker, quarter, fiscal_year)
@@ -88,7 +64,7 @@ def get_transcripts_by_ticker(ticker: str) -> list[dict]:
     """
     logger.info("Fetching transcripts for ticker %s", ticker)
     try:
-        with _conn() as conn:
+        with connection() as conn:
             rows = conn.execute(sql, (ticker,)).fetchall()
     except psycopg.Error:
         logger.exception("Failed to fetch transcripts for ticker %s", ticker)
@@ -104,7 +80,7 @@ def get_all_transcripts() -> list[dict]:
     """
     logger.info("Fetching all transcripts from DB")
     try:
-        with _conn() as conn:
+        with connection() as conn:
             rows = conn.execute(sql).fetchall()
     except psycopg.Error:
         logger.exception("Failed to fetch transcripts from DB")
@@ -128,12 +104,13 @@ def upsert_transcript_chunks(
     """
     # str([0.1, -0.2, 0.3]) -> "[0.1, -0.2, 0.3]"; pgvector's ::vector cast
     # accepts the whitespace, so no custom formatting is needed.
-    rows = []
-    for i in range(len(chunks)):
-        rows.append((transcript_id, i, chunks[i], str(embeddings[i])))
+    rows = [
+        (transcript_id, i, chunk, str(embedding))
+        for i, (chunk, embedding) in enumerate(zip(chunks, embeddings, strict=True))
+    ]
     logger.info("Upserting %d chunks for transcript_id=%s", len(rows), transcript_id)
     try:
-        with _conn() as conn:
+        with connection() as conn:
             conn.cursor().executemany(sql, rows)
     except psycopg.Error:
         logger.exception("Failed to upsert chunks for transcript_id=%s", transcript_id)

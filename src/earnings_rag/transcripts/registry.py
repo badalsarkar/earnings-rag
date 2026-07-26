@@ -3,11 +3,11 @@ import json
 from datetime import date
 from pathlib import Path
 
-from .paths import TRANSCRIPTS_DIR, TRANSCRIPTS_REGISTRY_DIR
+from ..config import REGISTRY_DIR, TRANSCRIPTS_DIR
 
 
 def registry_path(ticker: str) -> Path:
-    return TRANSCRIPTS_REGISTRY_DIR / f"{ticker}_transcripts.json"
+    return REGISTRY_DIR / f"{ticker}_transcripts.json"
 
 
 def transcript_path(ticker: str, entry: dict) -> Path:
@@ -74,14 +74,14 @@ def load_ticker_registry(ticker: str) -> dict | None:
 
 
 def save_ticker_registry(ticker: str, registry: dict) -> None:
-    TRANSCRIPTS_REGISTRY_DIR.mkdir(exist_ok=True)
+    REGISTRY_DIR.mkdir(exist_ok=True)
     registry_path(ticker).write_text(json.dumps(registry, indent=2))
 
 
 def all_registered_tickers() -> list[str]:
-    if not TRANSCRIPTS_REGISTRY_DIR.exists():
+    if not REGISTRY_DIR.exists():
         return []
     return sorted(
         f.stem.replace("_transcripts", "")
-        for f in TRANSCRIPTS_REGISTRY_DIR.glob("*_transcripts.json")
+        for f in REGISTRY_DIR.glob("*_transcripts.json")
     )

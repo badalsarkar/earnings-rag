@@ -1,36 +1,23 @@
+"""Cohere client: chat, embeddings, and the tokenizer used for chunking."""
 import logging
-import sys
-from pathlib import Path
+from functools import lru_cache
 
 import cohere
 import requests
 from cohere.core.api_error import ApiError
-from functools import lru_cache
 from tokenizers import Tokenizer
+
+from .chunking import CHUNK_OVERLAP, CHUNK_SIZE, chunk_tokens
 
 logger = logging.getLogger(__name__)
 
-TRANSCRIPTS_DIR = Path(__file__).parent / "transcripts"
-
 CHAT_MODEL = "command-r-plus-08-2024"
 EMBED_MODEL = "embed-english-v3.0"
-CHUNK_SIZE = 400
-CHUNK_OVERLAP = 50
 
 
 def chunk_text(text: str, chunk_size: int = CHUNK_SIZE, overlap: int = CHUNK_OVERLAP) -> list[str]:
-    if overlap >= chunk_size:
-        raise ValueError(f"overlap ({overlap}) must be less than chunk_size ({chunk_size})")
-    tokenizer = _get_tokenizer()
-    token_ids = tokenizer.encode(text).ids
-    chunks = []
-    start = 0
-    while start < len(token_ids):
-        end = min(start + chunk_size, len(token_ids))
-        chunk = tokenizer.decode(token_ids[start:end])
-        chunks.append(chunk.strip())
-        start += chunk_size - overlap
-    return [c for c in chunks if c]
+    """Chunk text on the embedding model's own tokenizer."""
+    return chunk_tokens(text, _get_tokenizer(), chunk_size, overlap)
 
 
 def embed(texts: list[str]) -> list[list[float]]:
@@ -55,7 +42,9 @@ def chat(query: str) -> str:
 
 def _embed(texts: list[str], input_type: str) -> list[list[float]]:
     # https://docs.cohere.com/reference/embed
-    logger.info("Cohere embed call: model=%s input_type=%s texts=%d", EMBED_MODEL, input_type, len(texts))
+    logger.info(
+        "Cohere embed call: model=%s input_type=%s texts=%d", EMBED_MODEL, input_type, len(texts)
+    )
     try:
         embeddings = _get_client().embed(
             model=EMBED_MODEL,
@@ -64,7 +53,10 @@ def _embed(texts: list[str], input_type: str) -> list[list[float]]:
             embedding_types=["float"],
         ).embeddings.float
     except ApiError:
-        logger.exception("Cohere embed call failed: model=%s input_type=%s texts=%d", EMBED_MODEL, input_type, len(texts))
+        logger.exception(
+            "Cohere embed call failed: model=%s input_type=%s texts=%d",
+            EMBED_MODEL, input_type, len(texts),
+        )
         raise
     logger.info("Cohere embed call succeeded: %d embeddings returned", len(embeddings))
     return embeddings
@@ -82,6 +74,7 @@ def _get_tokenizer() -> Tokenizer:
     tokenizer_json = requests.get(model_info.tokenizer_url, timeout=10).text
     # https://huggingface.co/docs/tokenizers/api/tokenizer#tokenizers.Tokenizer.from_str
     return Tokenizer.from_str(tokenizer_json)
+
 
 @lru_cache(maxsize=1)
 def _get_client() -> cohere.ClientV2:

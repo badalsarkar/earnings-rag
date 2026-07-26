@@ -1,4 +1,4 @@
-# transcript_service
+# Transcript scraper (`earnings_rag.transcripts`)
 
 Downloads earnings call transcripts from Motley Fool and stores them as plain-text files. State is tracked in per-ticker JSON registries so runs are idempotent — safe to call on a cron.
 
@@ -7,10 +7,10 @@ Downloads earnings call transcripts from Motley Fool and stores them as plain-te
 ```bash
 # 1. Bootstrap a ticker — fetches earnings dates from yfinance, sets the
 #    earliest_year floor, queues matching entries in the registry
-python -m transcript_service init MSFT microsoft --from-year 2024
+earnings-transcripts init MSFT microsoft --from-year 2024
 
 # 2. Download everything queued
-python -m transcript_service
+earnings-transcripts
 ```
 
 After bootstrap, step 2 is all that's needed for ongoing catch-up. Each run refreshes earnings dates from yfinance automatically before discovering new entries.
@@ -18,7 +18,7 @@ After bootstrap, step 2 is all that's needed for ongoing catch-up. Each run refr
 ## CLI
 
 ```
-python -m transcript_service [command] [options]
+earnings-transcripts [command] [options]
 ```
 
 | Command | Description |
@@ -45,9 +45,9 @@ If you see "Could not find transcript at expected URL", the slug is wrong. Re-ru
 
 | Path | Contents |
 | ---- | -------- |
-| `output/transcripts/<TICKER>_Q<N>_FY<YYYY>.txt` | Scraped transcript text |
-| `transcript_service/transcripts_registry/<TICKER>_transcripts.json` | Per-ticker registry |
-| `transcript_service/earnings_dates/<TICKER>.json` | Earnings date cache (updated each run) |
+| `data/transcripts/<TICKER>_Q<N>_FY<YYYY>.txt` | Scraped transcript text |
+| `data/registry/<TICKER>_transcripts.json` | Per-ticker registry |
+| `data/earnings_dates/earnings_dates_<TICKER>.json` | Earnings date cache (updated each run) |
 
 ## Registry schema
 
@@ -84,7 +84,7 @@ Legacy registries in plain list format are auto-migrated to this schema on first
 
 | Module | Responsibility |
 | ------ | -------------- |
-| `paths.py` | Shared path constants |
+| `../config.py` | Shared paths and env settings (package-wide) |
 | `dates.py` | yfinance earnings date fetching and local cache management |
 | `fiscal.py` | Fiscal calendar helpers (quarter/year mapping) |
 | `fool.py` | Motley Fool URL construction and HTML scraping |
@@ -95,9 +95,9 @@ Legacy registries in plain list format are auto-migrated to this schema on first
 ## Programmatic use
 
 ```python
-from transcript_service import load_ticker_registry, fetch_pending, save_ticker_registry
-from transcript_service.dates import refresh_earnings_dates
-from transcript_service.sync import queue_new_dates
+from earnings_rag.transcripts import load_ticker_registry, fetch_pending, save_ticker_registry
+from earnings_rag.transcripts.dates import refresh_earnings_dates
+from earnings_rag.transcripts.sync import queue_new_dates
 
 registry = load_ticker_registry("PATH")
 dates = refresh_earnings_dates("PATH")

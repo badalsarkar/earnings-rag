@@ -8,6 +8,8 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-earnings}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      # Applied in filename order, but only when the data volume is first created.
+      - ./migrations:/docker-entrypoint-initdb.d:ro
     ports:
       - "5432:5432"
     networks:

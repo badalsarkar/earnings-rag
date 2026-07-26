@@ -4,7 +4,7 @@ from pathlib import Path
 
 import yfinance as yf
 
-from .paths import EARNINGS_DATES_DIR
+from ..config import EARNINGS_DATES_DIR
 
 
 def _dates_file(ticker: str) -> Path:
