@@ -16,3 +16,8 @@
 - Larger vector consumes more space and compute intensive. They are suitable for higher precision scenario
 - Understood the pricing of embedding models
 
+## Sunday, June 26, 2026
+
+### Tried
+
+- Understand vector search. [Note here](./learning/vector-search.md)
