@@ -3,7 +3,8 @@ from fastapi import FastAPI, HTTPException
 
 from ..config import configure_logging, load_env
 from ..db import get_transcript, get_transcripts_by_ticker, upsert_transcript
-from .schemas import TranscriptIn, TranscriptOut
+from ..retrieval import retrieve
+from .schemas import ChunkOut, SearchIn, TranscriptIn, TranscriptOut
 
 load_env()
 configure_logging()
@@ -36,6 +37,16 @@ def read_transcript(ticker: str, quarter: int, fiscal_year: int):
     if row is None:
         raise HTTPException(status_code=404, detail="Transcript not found")
     return _serialize(row)
+
+
+@app.post("/search", response_model=list[ChunkOut])
+def search(body: SearchIn):
+    """Return the chunks most similar to `query`, closest first.
+
+    POST rather than GET because the query is free-form natural language that
+    can run long; an empty query yields an empty list, not an error.
+    """
+    return retrieve(body.query, top_k=body.top_k)
 
 
 def _serialize(row: dict) -> dict:

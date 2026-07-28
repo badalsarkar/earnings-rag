@@ -1,8 +1,3 @@
-"""Token-window chunking.
-
-Kept free of any Cohere import so the windowing logic can be tested with any
-tokenizer; ``cohere.chunk_text`` supplies the real one.
-"""
 from typing import Protocol
 
 

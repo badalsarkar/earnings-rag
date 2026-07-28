@@ -116,3 +116,51 @@ def upsert_transcript_chunks(
         logger.exception("Failed to upsert chunks for transcript_id=%s", transcript_id)
         raise
     logger.info("Upserted %d chunks for transcript_id=%s", len(rows), transcript_id)
+
+
+def search_chunks(embedding: list[float], limit: int = 5) -> list[dict]:
+    """Return the `limit` chunks nearest to `embedding`, closest first.
+
+    `<=>` is cosine distance, matching the `vector_cosine_ops` HNSW index in
+    migrations/002. Any other operator would still return correct rows but would
+    silently fall back to a sequential scan over every chunk.
+    """
+    sql = """
+        SELECT
+            c.id,
+            c.transcript_id,
+            c.chunk_index,
+            c.content,
+            1 - (c.embedding <=> %(embedding)s::vector) AS similarity,
+            t.ticker,
+            t.quarter,
+            t.fiscal_year,
+            t.report_date
+        FROM transcript_chunks c
+        JOIN transcripts t ON t.id = c.transcript_id
+        ORDER BY c.embedding <=> %(embedding)s::vector
+        LIMIT %(limit)s
+    """
+    logger.info("Searching chunks by embedding (limit=%d)", limit)
+    logger.debug("Query vector has %d dimensions", len(embedding))
+    try:
+        with connection() as conn:
+            rows = conn.execute(sql, {"embedding": str(embedding), "limit": limit}).fetchall()
+    except psycopg.Error:
+        logger.exception("Failed to search chunks by embedding (limit=%d)", limit)
+        raise
+    logger.info("Search returned %d chunks", len(rows))
+    if rows and logger.isEnabledFor(logging.DEBUG):
+        # .get() so a narrowed SELECT list can never make a log line raise.
+        hits = ", ".join(
+            "{ticker} Q{quarter} FY{fiscal_year} #{chunk_index} sim={similarity}".format(
+                ticker=row.get("ticker"),
+                quarter=row.get("quarter"),
+                fiscal_year=row.get("fiscal_year"),
+                chunk_index=row.get("chunk_index"),
+                similarity=round(row["similarity"], 4) if "similarity" in row else "?",
+            )
+            for row in rows
+        )
+        logger.debug("Hits: %s", hits)
+    return rows
