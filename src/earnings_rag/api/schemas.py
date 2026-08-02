@@ -25,6 +25,21 @@ class TranscriptOut(BaseModel):
     updated_at: str
 
 
+class EmbedIn(BaseModel):
+    ticker: str
+    quarter: int
+    fiscal_year: int
+
+
+class EmbedOut(BaseModel):
+    """Result of embedding a single transcript."""
+
+    ticker: str
+    quarter: int
+    fiscal_year: int
+    chunks_embedded: int
+
+
 class SearchIn(BaseModel):
     query: str
     # Upper bound is a guard on embedding + query cost, not a storage limit.
@@ -43,3 +58,24 @@ class ChunkOut(BaseModel):
     quarter: int
     fiscal_year: int
     report_date: date
+
+
+class ChatIn(BaseModel):
+    query: str = Field(min_length=1)
+    # Upper bound is a guard on embedding + query cost, not a storage limit.
+    top_k: int = Field(default=DEFAULT_TOP_K, ge=1, le=50)
+
+
+class CitationOut(BaseModel):
+    start: int
+    end: int
+    text: str
+    sources: list[str]
+
+
+class ChatOut(BaseModel):
+    """A generated answer, its supporting citations, and the chunks it was grounded in."""
+
+    answer: str
+    citations: list[CitationOut]
+    chunks: list[ChunkOut]

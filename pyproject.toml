@@ -22,6 +22,7 @@ dependencies = [
 earnings-transcripts = "earnings_rag.transcripts.cli:main"
 earnings-load = "earnings_rag.ingest.load:main"
 earnings-embed = "earnings_rag.ingest.embed:main"
+earnings-eyeball = "earnings_rag.eval.eyeball:main"
 
 [dependency-groups]
 dev = [

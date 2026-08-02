@@ -13,6 +13,8 @@ logger = logging.getLogger(__name__)
 
 CHAT_MODEL = "command-r-plus-08-2024"
 EMBED_MODEL = "embed-english-v3.0"
+# https://docs.cohere.com/reference/embed - "Maximum number of texts per call is 96."
+EMBED_BATCH_SIZE = 96
 
 
 def chunk_text(text: str, chunk_size: int = CHUNK_SIZE, overlap: int = CHUNK_OVERLAP) -> list[str]:
@@ -21,23 +23,52 @@ def chunk_text(text: str, chunk_size: int = CHUNK_SIZE, overlap: int = CHUNK_OVE
 
 
 def embed(texts: list[str]) -> list[list[float]]:
-    return _embed(texts, "search_document")
+    """Embed `texts`, batching calls at Cohere's per-request cap.
+
+    All-or-nothing: a failed batch raises before any embeddings are returned,
+    so a partial result is never handed back to a caller expecting to persist
+    embeddings 1:1 with the input texts.
+    """
+    embeddings: list[list[float]] = []
+    for i in range(0, len(texts), EMBED_BATCH_SIZE):
+        batch = texts[i : i + EMBED_BATCH_SIZE]
+        embeddings.extend(_embed(batch, "search_document"))
+    return embeddings
 
 
 def embed_query(query: str) -> list[float]:
     return _embed([query], "search_query")[0]
 
 
-def chat(query: str) -> str:
+def chat(query: str, documents: list[dict] | None = None) -> dict:
+    """Answer `query`, grounded in `documents` when given.
+
+    `documents` follows Cohere's RAG document shape: [{"id": ..., "data": {...}}].
+    https://docs.cohere.com/reference/chat
+    """
     message = [{"role": "user", "content": query}]
-    # https://docs.cohere.com/reference/chat
-    logger.info("Cohere chat call: model=%s query_len=%d", CHAT_MODEL, len(query))
+    kwargs = {"model": CHAT_MODEL, "messages": message}
+    if documents:
+        kwargs["documents"] = documents
+    logger.info(
+        "Cohere chat call: model=%s query_len=%d documents=%d",
+        CHAT_MODEL, len(query), len(documents) if documents else 0,
+    )
     try:
-        response = _get_client().chat(model=CHAT_MODEL, messages=message)
+        response = _get_client().chat(**kwargs)
     except ApiError:
         logger.exception("Cohere chat call failed: model=%s", CHAT_MODEL)
         raise
-    return response.message.content[0].text
+    citations = [
+        {
+            "start": citation.start,
+            "end": citation.end,
+            "text": citation.text,
+            "sources": [source.id for source in (citation.sources or [])],
+        }
+        for citation in (response.message.citations or [])
+    ]
+    return {"text": response.message.content[0].text, "citations": citations}
 
 
 def _embed(texts: list[str], input_type: str) -> list[list[float]]:

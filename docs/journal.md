@@ -21,3 +21,16 @@
 ### Tried
 
 - Understand vector search. [Note here](./learning/vector-search.md)
+
+## Tuesday, June 28, 2026
+
+- Commited vector search implementation
+- Understood different distance metrics and how to choose one
+- Ran the search and reviewed the result
+
+## Sunday, August 2, 2026
+
+- Tested chat response 
+- Created eyeball.json to record eval
+- Exposed API endpoint for chat and transcript embeddin 1g
+- Created batching of transcript embedding

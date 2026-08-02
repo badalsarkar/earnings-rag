@@ -1,0 +1,14 @@
+[
+  {
+    "question": "how did cloud revenue grow",
+    "answer": "Cloud revenue has grown significantly in recent quarters, with Google Cloud revenue rising 32% to $13.6 billion in the second quarter of 2025 and 63% to $20 billion in the first quarter of 2026. This growth has been driven by strong performance in GCP, which has grown at a rate much higher than the overall cloud revenue growth rate.\n\nThe largest contributor to cloud growth has been AI solutions, driven by strong demand for industry-leading models like Gemini 3. Additionally, there has been strong growth in infrastructure due to the continued deployment of TPUs and GPUs, and core GCP has remained a sizable contributor, driven by demand for infrastructure and other services such as cybersecurity and data analytics.\n\nThe expansion in cloud operating margin has been driven by various factors, including the top line, where robust strong revenue growth in both cloud and Google services provides leverage all the way.",
+    "top_chunk_ids": [
+      143,
+      97,
+      175,
+      111,
+      188
+    ],
+    "one_line_opinion": "seems accurate, cites the right chunk"
+  }
+]

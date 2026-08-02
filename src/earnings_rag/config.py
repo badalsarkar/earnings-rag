@@ -16,6 +16,8 @@ EARNINGS_DATES_DIR = DATA_DIR / "earnings_dates"
 
 MIGRATIONS_DIR = REPO_ROOT / "migrations"
 
+EVAL_RUNS_DIR = Path(os.getenv("EARNINGS_EVAL_DIR", REPO_ROOT / "eval_runs"))
+
 
 def postgres_dsn() -> str:
     """libpq connection string built from POSTGRES_* env vars."""

@@ -1,10 +1,22 @@
 """FastAPI application exposing the transcripts table over HTTP."""
+from cohere.core.api_error import ApiError
 from fastapi import FastAPI, HTTPException
 
+from ..chat import answer as answer_chat
 from ..config import configure_logging, load_env
 from ..db import get_transcript, get_transcripts_by_ticker, upsert_transcript
+from ..ingest.embed import embed_transcript
 from ..retrieval import retrieve
-from .schemas import ChunkOut, SearchIn, TranscriptIn, TranscriptOut
+from .schemas import (
+    ChatIn,
+    ChatOut,
+    ChunkOut,
+    EmbedIn,
+    EmbedOut,
+    SearchIn,
+    TranscriptIn,
+    TranscriptOut,
+)
 
 load_env()
 configure_logging()
@@ -39,6 +51,27 @@ def read_transcript(ticker: str, quarter: int, fiscal_year: int):
     return _serialize(row)
 
 
+@app.post("/transcripts/embed", response_model=EmbedOut)
+def embed_one(body: EmbedIn):
+    """Chunk and embed one transcript's content, upserting its vectors."""
+    row = get_transcript(body.ticker.upper(), body.quarter, body.fiscal_year)
+    if row is None:
+        raise HTTPException(status_code=404, detail="Transcript not found")
+    if not row["content"]:
+        raise HTTPException(status_code=422, detail="Transcript has no content")
+    try:
+        chunk_count = embed_transcript(row)
+    except ApiError as exc:
+        # embed_transcript is all-or-nothing, so no chunks were written.
+        raise HTTPException(status_code=502, detail="Embedding call failed") from exc
+    return {
+        "ticker": row["ticker"],
+        "quarter": row["quarter"],
+        "fiscal_year": row["fiscal_year"],
+        "chunks_embedded": chunk_count,
+    }
+
+
 @app.post("/search", response_model=list[ChunkOut])
 def search(body: SearchIn):
     """Return the chunks most similar to `query`, closest first.
@@ -47,6 +80,12 @@ def search(body: SearchIn):
     can run long; an empty query yields an empty list, not an error.
     """
     return retrieve(body.query, top_k=body.top_k)
+
+
+@app.post("/chat", response_model=ChatOut)
+def chat(body: ChatIn):
+    """Answer `query`, grounded in the transcript chunks most relevant to it."""
+    return answer_chat(body.query, top_k=body.top_k)
 
 
 def _serialize(row: dict) -> dict:
