@@ -10,5 +10,63 @@
       188
     ],
     "one_line_opinion": "seems accurate, cites the right chunk"
+  },
+  {
+    "question": "How much revenue does youtube bring?",
+    "answer": "YouTube's annual revenue surpassed $60 billion across ads and subscriptions in 2025.\n\nIn the first quarter of 2024, YouTube's advertising revenues were $8.1 billion, up 21% from the previous year.\n\nIn the second quarter of 2024, YouTube's advertising revenues were $8.7 billion, up 13% from the previous year.\n\nIn the fourth quarter of 2023, YouTube's advertising revenues were $9.2 billion, up 16% from the previous year.",
+    "top_chunk_ids": [
+      614,
+      551,
+      584,
+      689,
+      580
+    ],
+    "one_line_opinion": "I didn't specify the year. The search returned chunks with information for all the years. This is good."
+  },
+  {
+    "question":"How much was the revenue for google services in q4 of fy 2023?",
+    "answer":"Google services revenues were $76 billion, up 12% year on year.",
+    "top_chunk_ids":[
+      552,
+      680,
+      551,
+      550,
+      615,
+      553,
+      634,
+      545,
+      577,
+      584
+    ],
+    "one_line_opinion":"The model provided correct answer. However the answer was not the int top 2 chunks, it was in chunk 551"
+  },
+  {
+    "question":"what is the performance of google cloud in q 4 of fy 2023?",
+    "answer":"In Q4 of FY 2023, Google Cloud's revenues were $9.2 billion, up 26%. Google Cloud delivered operating income of $864 million and an operating margin of 9%.",
+    "top_chunk_ids":[
+      680,
+      553,
+      552,
+      634,
+      681
+    ],
+    "one_line_opinion":"Answer is correct and retrieved correct chunks. Increasing chunk limit from 5 to 10 improves the answer significantly"
+  },
+  {
+    "question":"what was the response to the question asked by analyst from morgan stanley in q4 fy 2023 earnings call?",
+    "answer":"The analyst from Morgan Stanley, Brian Nowak, asked two questions during the Q4 FY 2023 earnings call.\n\nThe first question was directed at Philipp Schindler, Senior Vice President and Chief Business Officer, and was about the new generative AI advertising tools.\n\nThe second question was directed at Ruth Porat, Chief Financial Officer, and was about overall search behaviour and monetizable and commercial query trends.",
+    "top_chunk_ids":[
+      554,
+      556,
+      601,
+      683,
+      587,
+      590,
+      618,
+      553,
+      565,
+      538
+    ],
+    "one_line_opinion":"The answer is not correct. The correct chunks were not retrieved"
   }
 ]
